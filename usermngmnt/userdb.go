@@ -6,83 +6,75 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Id int `json:"ID"`
-	User_name string `json:"user_name"`
-	Email string `json:"email"`
+	ID        int    `json:"ID"`
+	UserName  string `json:"user_name"`
+	Email     string `json:"email"`
 }
 
 type UsrHandler struct {
 	DB *gorm.DB
 }
 
-func (ordhandler *UsrHandler) Connection(host,user,password,dbname,port string) {
+func (usrHandler *UsrHandler) Connection(host, user, password, dbname, port string) {
 	var err error
 
-	dsn:="host="+host+" user="+user+" password="+password+" dbname="+dbname+" port="+port+" sslmode=disable"
-	ordhandler.DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbname, port)
+	usrHandler.DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
 	fmt.Println("Connection Opened to Database")
-	ordhandler.DB.AutoMigrate(&User{})
-
+	usrHandler.DB.AutoMigrate(&User{})
 }
-
 
 func HealthCheck(c *gin.Context) {
 	c.Status(http.StatusOK)
 	c.String(http.StatusOK, "Super Secret Area")
 }
 
-
-func (usrhandler *UsrHandler) GetUser(c *gin.Context) {
+func (usrHandler *UsrHandler) GetUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	var users []User
-	usrhandler.DB.Find(&users)
-	c.JSON(200, users)
+	usrHandler.DB.Find(&users)
+	c.JSON(http.StatusOK, users)
 }
 
-
-func (usrhandler *UsrHandler) AddUser(c *gin.Context) {
+func (usrHandler *UsrHandler) AddUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	var user User
 	json.NewDecoder(c.Request.Body).Decode(&user)
-	usrhandler.DB.Create(&user)
-	c.JSON(201, user)
+	usrHandler.DB.Create(&user)
+	c.JSON(http.StatusCreated, user)
 }
-
 
 func (usrHandler *UsrHandler) GetUserInd(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	var user User
 	id := c.Param("id")
 	usrHandler.DB.First(&user, id)
-	c.JSON(200, user)
+	c.JSON(http.StatusOK, user)
 }
 
-
-func (usrhandler *UsrHandler) DelUser(c *gin.Context) {
+func (usrHandler *UsrHandler) DelUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	var user User
 	id := c.Param("id")
-	usrhandler.DB.Delete(&user, id)
-	c.JSON(200, gin.H{"message": "User deleted"})
+	usrHandler.DB.Delete(&user, id)
+	c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
 }
 
-
-func (usrhandler *UsrHandler) UpdateUser(c *gin.Context) {
+func (usrHandler *UsrHandler) UpdateUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	var user User
 	id := c.Param("id")
-	usrhandler.DB.First(&user, id)
+	usrHandler.DB.First(&user, id)
 	json.NewDecoder(c.Request.Body).Decode(&user)
-	usrhandler.DB.Save(&user)
-	c.JSON(200, user)
+	usrHandler.DB.Save(&user)
+	c.JSON(http.StatusOK, user)
 }

@@ -1,110 +1,107 @@
 package usermngmnt
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
-	"usermngmnt"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
+var usrHandler UsrHandler
 
-func TestHealthCheck(t *testing.T) {
-	req, err := http.NewRequest("GET", "/health", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+func TestMain(m *testing.M) {
+	dsn := "host=localhost user=postgres password=root dbname=forapi port=5433 sslmode=disable"
+    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+    if err != nil {
+        panic("failed to connect database")
+    }
+	usrHandler.DB = db
+    usrHandler.Connection("localhost", "postgres", "root", "forapi", "5433")
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(usermngmnt.HealthCheck)
+    code := m.Run()
 
-	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("HealthCheck handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-	expected := "Super Secret Area"
-	if rr.Body.String() != expected {
-		t.Errorf("HealthCheck handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
+    dbInstance, _ := usrHandler.DB.DB()
+    dbInstance.Close()
+
+    os.Exit(code)
+}
+
+func TestConnection(t *testing.T) {
+	assert.NotNil(t, usrHandler.DB)
 }
 
 func TestGetUser(t *testing.T) {
-	req, err := http.NewRequest("GET", "/user", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+    router := gin.Default()
+    router.GET("/user", usrHandler.GetUser)
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(usermngmnt.GetUser)
+    req, _ := http.NewRequest("GET", "/user", nil)
+    recorder := httptest.NewRecorder()
 
-	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("GetUser handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+    router.ServeHTTP(recorder, req)
+
+    fmt.Println("GetUser Test Result:", recorder.Body.String())
+    assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
 func TestAddUser(t *testing.T) {
-	req, err := http.NewRequest("POST", "/adduser", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+    router := gin.Default()
+    router.POST("/adduser", usrHandler.AddUser)
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(usermngmnt.AddUser)
+    req, _ := http.NewRequest("POST", "/adduser", strings.NewReader(`{"ID": 12, "user_name": "Alice", "email": "alice@example.com"}`))
+    req.Header.Set("Content-Type", "application/json")
+    recorder := httptest.NewRecorder()
 
-	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("AddUser handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+    router.ServeHTTP(recorder, req)
+
+    fmt.Println("AddUser Test Result:", recorder.Body.String())
+    assert.Equal(t, http.StatusCreated, recorder.Code)
 }
 
 func TestGetUserInd(t *testing.T) {
-	req, err := http.NewRequest("GET", "/user/1", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+    router := gin.Default()
+    router.GET("/user/:id", usrHandler.GetUserInd)
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(usermngmnt.GetUserInd)
+    req, _ := http.NewRequest("GET", "/user/12", nil)
+    recorder := httptest.NewRecorder()
 
-	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("GetUserInd handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-}
+    router.ServeHTTP(recorder, req)
 
-func TestDelUser(t *testing.T) {
-	req, err := http.NewRequest("DELETE", "/delUser/1", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(usermngmnt.DelUser)
-
-	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("DelUser handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+    fmt.Println("GetUserInd Test Result:", recorder.Body.String())
+    assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
 func TestUpdateUser(t *testing.T) {
-	req, err := http.NewRequest("PUT", "/updateUser/1", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+    router := gin.Default()
+    router.PUT("/updateUser/:id", usrHandler.UpdateUser)
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(usermngmnt.UpdateUser)
+    req, _ := http.NewRequest("PUT", "/updateUser/12", strings.NewReader(`{"user_name": "Alice", "email": "alice.smith@example.com"}`))
+    req.Header.Set("Content-Type", "application/json")
+    recorder := httptest.NewRecorder()
 
-	handler.ServeHTTP(rr, req)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("UpdateUser handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+    router.ServeHTTP(recorder, req)
+
+    fmt.Println("UpdateUser Test Result:", recorder.Body.String())
+    assert.Equal(t, http.StatusOK, recorder.Code)
 }
+
+
+func TestDelUser(t *testing.T) {
+    router := gin.Default()
+    router.DELETE("/delUser/:id", usrHandler.DelUser)
+
+    req, _ := http.NewRequest("DELETE", "/delUser/12", nil)
+    recorder := httptest.NewRecorder()
+
+    router.ServeHTTP(recorder, req)
+
+    fmt.Println("DelUser Test Result:", recorder.Body.String())
+    assert.Equal(t, http.StatusOK, recorder.Code)
+}
+
