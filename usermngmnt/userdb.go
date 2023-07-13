@@ -31,30 +31,16 @@ func (ordhandler *UsrHandler) Connection(host,user,password,dbname,port string) 
 		panic("failed to connect database")
 	}
 	fmt.Println("Connection Opened to Database")
-
-	// ordhandler.DB.AutoMigrate(User{})
 	ordhandler.DB.AutoMigrate(&User{})
 
 }
 
-// func HealthCheck(w http.ResponseWriter, r *http.Request) {
-// 	w.WriteHeader(http.StatusOK)
-// 	fmt.Fprintf(w, "Super Secret Area")
-// }
 
 func HealthCheck(c *gin.Context) {
 	c.Status(http.StatusOK)
 	c.String(http.StatusOK, "Super Secret Area")
 }
 
-
-
-// func (usrhandler *UsrHandler) GetUser(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	var User []User
-// 	usrhandler.DB.Find(&User)
-// 	json.NewEncoder(w).Encode(&User)
-// }
 
 func (usrhandler *UsrHandler) GetUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
@@ -63,14 +49,6 @@ func (usrhandler *UsrHandler) GetUser(c *gin.Context) {
 	c.JSON(200, users)
 }
 
-
-// func (usrhandler *UsrHandler) AddUser(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	var User User
-// 	json.NewDecoder(r.Body).Decode(&User)
-// 	usrhandler.DB.Create(&User)
-// 	json.NewEncoder(w).Encode(&User)
-// }
 
 func (usrhandler *UsrHandler) AddUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
@@ -81,15 +59,6 @@ func (usrhandler *UsrHandler) AddUser(c *gin.Context) {
 }
 
 
-// func (usrHandler *UsrHandler) GetUserInd(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	var user User
-// 	params := mux.Vars(r)
-// 	usrHandler.DB.First(&user, params["id"])
-// 	json.NewEncoder(w).Encode(&user)
-
-// }
-
 func (usrHandler *UsrHandler) GetUserInd(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	var user User
@@ -99,15 +68,6 @@ func (usrHandler *UsrHandler) GetUserInd(c *gin.Context) {
 }
 
 
-// func (usrhandler *UsrHandler) DelUser(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	var User User
-// 	params := mux.Vars(r)
-// 	usrhandler.DB.Delete(&User, params["id"])
-// 	json.NewEncoder(w).Encode(&User)
-	
-// }
-
 func (usrhandler *UsrHandler) DelUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	var user User
@@ -116,17 +76,6 @@ func (usrhandler *UsrHandler) DelUser(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "User deleted"})
 }
 
-
-// func (usrhandler *UsrHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	var User User
-// 	params := mux.Vars(r)
-// 	usrhandler.DB.First(&User, params["id"])
-// 	json.NewDecoder(r.Body).Decode(&User)
-// 	usrhandler.DB.Save(&User)
-// 	json.NewEncoder(w).Encode(&User)
-	
-// }
 
 func (usrhandler *UsrHandler) UpdateUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
