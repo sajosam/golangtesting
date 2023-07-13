@@ -3,11 +3,11 @@ package main
 import (
 	"net/http"
 
-	"example/userapi/usermngmnt"
+	"github.com/testapi/usermngmnt"
 
 	"github.com/gin-gonic/gin"
 
-	docs "example/userapi/docs"
+	docs "github.com/testapi/docs"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
