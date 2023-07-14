@@ -1,4 +1,4 @@
-package usermngmnt
+package bookmngmnt
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var usrHandler UsrHandler
+var bookHandler BookHandler
 
 func TestMain(m *testing.M) {
 	dsn := "host=localhost user=postgres password=root dbname=forapi port=5433 sslmode=disable"
@@ -22,81 +22,81 @@ func TestMain(m *testing.M) {
     if err != nil {
         panic("failed to connect database")
     }
-	usrHandler.DB = db
-    usrHandler.UserConnection("localhost", "postgres", "root", "forapi", "5433")
+	bookHandler.DB = db
+    bookHandler.BookConnection("localhost", "postgres", "root", "forapi", "5433")
 
     code := m.Run()
 
-    dbInstance, _ := usrHandler.DB.DB()
+    dbInstance, _ := bookHandler.DB.DB()
     dbInstance.Close()
 
     os.Exit(code)
 }
 
 func TestConnection(t *testing.T) {
-	assert.NotNil(t, usrHandler.DB)
+	assert.NotNil(t, bookHandler.DB)
 }
 
-func TestGetUser(t *testing.T) {
+func TestGetBook(t *testing.T) {
     router := gin.Default()
-    router.GET("/user", usrHandler.GetUser)
+    router.GET("/book", bookHandler.GetBook)
 
-    req, _ := http.NewRequest("GET", "/user", nil)
+    req, _ := http.NewRequest("GET", "/book", nil)
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)
 
-    fmt.Println("GetUser Test Result:", recorder.Body.String())
+    fmt.Println("GetBook Test Result:", recorder.Body.String())
     assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
-func TestAddUser(t *testing.T) {
+func TestAddBook(t *testing.T) {
     router := gin.Default()
-    router.POST("/adduser", usrHandler.AddUser)
+    router.POST("/addbook", bookHandler.AddBook)
 
-    req, _ := http.NewRequest("POST", "/adduser", strings.NewReader(`{"ID": 12, "user_name": "Alice", "email": "alice@example.com"}`))
+    req, _ := http.NewRequest("POST", "/addbook", strings.NewReader(`{"ID": 10, "book_name": "Alice", "price": 100}`))
     req.Header.Set("Content-Type", "application/json")
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)
 
-    fmt.Println("AddUser Test Result:", recorder.Body.String())
+    fmt.Println("AddBook Test Result:", recorder.Body.String())
     assert.Equal(t, http.StatusCreated, recorder.Code)
 }
 
-func TestGetUserInd(t *testing.T) {
+func TestGetBookInd(t *testing.T) {
     router := gin.Default()
-    router.GET("/user/:id", usrHandler.GetUserInd)
+    router.GET("/book/:id", bookHandler.GetBookInd)
 
-    req, _ := http.NewRequest("GET", "/user/12", nil)
+    req, _ := http.NewRequest("GET", "/book/10", nil)
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)
 
-    fmt.Println("GetUserInd Test Result:", recorder.Body.String())
+    fmt.Println("GetBookInd Test Result:", recorder.Body.String())
     assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
-func TestUpdateUser(t *testing.T) {
+func TestUpdateBook(t *testing.T) {
     router := gin.Default()
-    router.PUT("/updateUser/:id", usrHandler.UpdateUser)
+    router.PUT("/updateBook/:id", bookHandler.UpdateBook)
 
-    req, _ := http.NewRequest("PUT", "/updateUser/12", strings.NewReader(`{"user_name": "Alice", "email": "alice.smith@example.com"}`))
+    req, _ := http.NewRequest("PUT", "/updateBook/10", strings.NewReader(`{"book_name": "Alice", "price": 1000}`))
     req.Header.Set("Content-Type", "application/json")
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)
 
-    fmt.Println("UpdateUser Test Result:", recorder.Body.String())
+    fmt.Println("UpdateBook Test Result:", recorder.Body.String())
     assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
 
-func TestDelUser(t *testing.T) {
+func TestDelBook(t *testing.T) {
     router := gin.Default()
-    router.DELETE("/delUser/:id", usrHandler.DelUser)
+    router.DELETE("/delBook/:id", bookHandler.DelBook)
 
-    req, _ := http.NewRequest("DELETE", "/delUser/12", nil)
+    req, _ := http.NewRequest("DELETE", "/delBook/10", nil)
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)

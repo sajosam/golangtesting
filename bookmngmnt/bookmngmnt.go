@@ -18,7 +18,7 @@ type BookHandler struct {
 	DB *gorm.DB
 }
 
-func (bookHandler *BookHandler) Connection(host, user, password, dbname, port string) {
+func (bookHandler *BookHandler) BookConnection(host, user, password, dbname, port string) {
 	var err error
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbname, port)

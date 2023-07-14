@@ -17,7 +17,3 @@ type Book struct {
 	BookName    string `json:"book_name"`
 	Price       float64 `json:"price"`
 }
-// type UsrHandler struct {
-// 	DB *gorm.DB
-// }
-

@@ -18,7 +18,7 @@ type UsrHandler struct {
 	DB *gorm.DB
 }
 
-func (usrHandler *UsrHandler) Connection(host, user, password, dbname, port string) {
+func (usrHandler *UsrHandler) UserConnection(host, user, password, dbname, port string) {
 	var err error
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbname, port)
