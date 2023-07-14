@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/testapi/dbmngmnt"
 	"github.com/testapi/usermngmnt"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var usrHandlerObj usermngmnt.UsrHandler
+var usrHandlerObj dbmngmnt.UsrHandler
 
 func main() {
 	usrHandlerObj.Connection("localhost", "postgres", "root", "forapi", "5433")
@@ -22,7 +23,7 @@ func main() {
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
-	router.GET("/health", usermngmnt.HealthCheck)
+	router.GET("/userhealth", usermngmnt.HealthCheck)
 	router.GET("/user", usrHandlerObj.GetUser)
 	router.POST("/adduser", usrHandlerObj.AddUser)
 	router.GET("/user/:id", usrHandlerObj.GetUserInd)
