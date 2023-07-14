@@ -1,4 +1,4 @@
-package dbmngmnt
+package models
 
 import (
 	"gorm.io/gorm"
