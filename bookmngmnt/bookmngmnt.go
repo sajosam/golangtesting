@@ -38,41 +38,41 @@ func HealthCheck(c *gin.Context) {
 
 func (bookHandler *BookHandler) GetBook(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var users []dbmngmnt.User
-	bookHandler.DB.Find(&users)
-	c.JSON(http.StatusOK, users)
+	var book []dbmngmnt.Book
+	bookHandler.DB.Find(&book)
+	c.JSON(http.StatusOK, book)
 }
 
 func (bookHandler *BookHandler) AddBook(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user dbmngmnt.User
-	json.NewDecoder(c.Request.Body).Decode(&user)
-	bookHandler.DB.Create(&user)
-	c.JSON(http.StatusCreated, user)
+	var book dbmngmnt.Book
+	json.NewDecoder(c.Request.Body).Decode(&book)
+	bookHandler.DB.Create(&book)
+	c.JSON(http.StatusCreated, book)
 }
 
 func (bookHandler *BookHandler) GetBookInd(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user dbmngmnt.User
+	var book dbmngmnt.Book
 	id := c.Param("id")
-	bookHandler.DB.First(&user, id)
-	c.JSON(http.StatusOK, user)
+	bookHandler.DB.First(&book, id)
+	c.JSON(http.StatusOK, book)
 }
 
 func (bookHandler *BookHandler) DelBook(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user dbmngmnt.User
+	var book dbmngmnt.Book
 	id := c.Param("id")
-	bookHandler.DB.Delete(&user, id)
-	c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
+	bookHandler.DB.Delete(&book, id)
+	c.JSON(http.StatusOK, gin.H{"message": "Book deleted"})
 }
 
 func (bookHandler *BookHandler) UpdateBook(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user dbmngmnt.User
+	var book dbmngmnt.Book
 	id := c.Param("id")
-	bookHandler.DB.First(&user, id)
-	json.NewDecoder(c.Request.Body).Decode(&user)
-	bookHandler.DB.Save(&user)
-	c.JSON(http.StatusOK, user)
+	bookHandler.DB.First(&book, id)
+	json.NewDecoder(c.Request.Body).Decode(&book)
+	bookHandler.DB.Save(&book)
+	c.JSON(http.StatusOK, book)
 }
