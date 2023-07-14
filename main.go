@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 
-	"github.com/testapi/dbmngmnt"
 	"github.com/testapi/usermngmnt"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +13,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var usrHandlerObj dbmngmnt.UsrHandler
+var usrHandlerObj usermngmnt.UsrHandler
 
 func main() {
 	usrHandlerObj.Connection("localhost", "postgres", "root", "forapi", "5433")
