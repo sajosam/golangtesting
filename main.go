@@ -3,8 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/testapi/bookmngmnt"
-	"github.com/testapi/usermngmnt"
+	"github.com/testapi/handlers"
 
 	"github.com/gin-gonic/gin"
 
@@ -14,38 +13,38 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var usrHandlerObj usermngmnt.UsrHandler
-var bookHandlerObj bookmngmnt.BookHandler
+var handler handlers.Handler
 
 func main() {
-	usrHandlerObj.UserConnection("localhost", "postgres", "root", "forapi", "5433")
-	bookHandlerObj.BookConnection("localhost", "postgres", "root", "forapi", "5433")
+	handler.Connect("localhost", "postgres", "root", "forapi", "5433")
 
+	handler.DB.AutoMigrate(&models.Book{})
+	handler.DB.AutoMigrate(&models.User{})
 
 	router := gin.Default()
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
-	router.GET("/userhealth", usermngmnt.HealthCheck)
-	router.GET("/user", usrHandlerObj.GetUser)
-	router.POST("/adduser", usrHandlerObj.AddUser)
-	router.GET("/user/:id", usrHandlerObj.GetUserInd)
-	router.DELETE("/delUser/:id", usrHandlerObj.DelUser)
-	router.PUT("/updateUser/:id", usrHandlerObj.UpdateUser)
+	router.GET("/userhealth", handlers.HealthCheck)
+	router.GET("/user", handler.GetUser)
+	router.POST("/adduser", handler.AddUser)
+	router.GET("/user/:id", handler.GetUserInd)
+	router.DELETE("/delUser/:id", handler.DelUser)
+	router.PUT("/updateUser/:id", handler.UpdateUser)
 
 
-	router.GET("/bookhealth", bookmngmnt.HealthCheck)
-	router.GET("/book", bookHandlerObj.GetBook)
-	router.POST("/addbook", bookHandlerObj.AddBook)
-	router.GET("/book/:id", bookHandlerObj.GetBookInd)
-	router.DELETE("/delBook/:id", bookHandlerObj.DelBook)
-	router.PUT("/updateBook/:id", bookHandlerObj.UpdateBook)
+	router.GET("/bookhealth", handlers.HealthCheck)
+	router.GET("/book", handler.GetBook)
+	router.POST("/addbook", handler.AddBook)
+	router.GET("/book/:id", handler.GetBookInd)
+	router.DELETE("/delBook/:id", handler.DelBook)
+	router.PUT("/updateBook/:id", handler.UpdateBook)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	http.Handle("/", router)
 	http.ListenAndServe("0.0.0.0:8000", router)
 
-	dbInstance, _ := usrHandlerObj.DB.DB()
+	dbInstance, _ := handler.DB.DB()
 	defer dbInstance.Close()
 }
