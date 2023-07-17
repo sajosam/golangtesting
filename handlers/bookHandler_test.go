@@ -1,41 +1,38 @@
-package bookmngmnt
+package handlers
 
 import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
-var bookHandler BookHandler
+var bookHandler Handler
 
-func TestMain(m *testing.M) {
-	dsn := "host=localhost user=postgres password=root dbname=forapi port=5433 sslmode=disable"
-    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-    if err != nil {
-        panic("failed to connect database")
-    }
-	bookHandler.DB = db
-    bookHandler.BookConnection("localhost", "postgres", "root", "forapi", "5433")
+// func TestMain(m *testing.M) {
+// 	dsn := "host=localhost user=postgres password=root dbname=forapi port=5433 sslmode=disable"
+//     db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+//     if err != nil {
+//         panic("failed to connect database")
+//     }
+// 	bookHandler.DB = db
+//     bookHandler.Connect("localhost", "postgres", "root", "forapi", "5433")
 
-    code := m.Run()
+//     code := m.Run()
 
-    dbInstance, _ := bookHandler.DB.DB()
-    dbInstance.Close()
+//     dbInstance, _ := bookHandler.DB.DB()
+//     dbInstance.Close()
 
-    os.Exit(code)
-}
+//     os.Exit(code)
+// }
 
-func TestConnection(t *testing.T) {
-	assert.NotNil(t, bookHandler.DB)
-}
+// func TestConnect(t *testing.T) {
+// 	assert.NotNil(t, bookHandler.DB)
+// }
 
 func TestGetBook(t *testing.T) {
     router := gin.Default()

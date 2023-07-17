@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/testapi/handlers"
+	"github.com/testapi/models"
 
 	"github.com/gin-gonic/gin"
 
@@ -33,7 +34,6 @@ func main() {
 	router.PUT("/updateUser/:id", handler.UpdateUser)
 
 
-	router.GET("/bookhealth", handlers.HealthCheck)
 	router.GET("/book", handler.GetBook)
 	router.POST("/addbook", handler.AddBook)
 	router.GET("/book/:id", handler.GetBookInd)

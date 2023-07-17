@@ -1,15 +1,11 @@
-package usermngmnt
+package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-
 	"github.com/gin-gonic/gin"
-	"github.com/testapi/dbmngmnt"
+	"github.com/testapi/models"
 )
 
 
@@ -18,43 +14,43 @@ func HealthCheck(c *gin.Context) {
 	c.String(http.StatusOK, "Super Secret Area")
 }
 
-func (usrHandler *UsrHandler) GetUser(c *gin.Context) {
+func (handler Handler) GetUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var users []dbmngmnt.User
-	usrHandler.DB.Find(&users)
+	var users []models.User
+	handler.DB.Find(&users)
 	c.JSON(http.StatusOK, users)
 }
 
-func (usrHandler *UsrHandler) AddUser(c *gin.Context) {
+func (handler Handler) AddUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user dbmngmnt.User
+	var user models.User
 	json.NewDecoder(c.Request.Body).Decode(&user)
-	usrHandler.DB.Create(&user)
+	handler.DB.Create(&user)
 	c.JSON(http.StatusCreated, user)
 }
 
-func (usrHandler *UsrHandler) GetUserInd(c *gin.Context) {
+func (handler Handler) GetUserInd(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user dbmngmnt.User
+	var user models.User
 	id := c.Param("id")
-	usrHandler.DB.First(&user, id)
+	handler.DB.First(&user, id)
 	c.JSON(http.StatusOK, user)
 }
 
-func (usrHandler *UsrHandler) DelUser(c *gin.Context) {
+func (handler Handler) DelUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user dbmngmnt.User
+	var user models.User
 	id := c.Param("id")
-	usrHandler.DB.Delete(&user, id)
+	handler.DB.Delete(&user, id)
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
 }
 
-func (usrHandler *UsrHandler) UpdateUser(c *gin.Context) {
+func (handler Handler) UpdateUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user dbmngmnt.User
+	var user models.User
 	id := c.Param("id")
-	usrHandler.DB.First(&user, id)
+	handler.DB.First(&user, id)
 	json.NewDecoder(c.Request.Body).Decode(&user)
-	usrHandler.DB.Save(&user)
+	handler.DB.Save(&user)
 	c.JSON(http.StatusOK, user)
 }

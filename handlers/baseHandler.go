@@ -1,4 +1,12 @@
-package handler
+package handlers
+
+import (
+	"fmt"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+
+)
 
 type Handler struct {
 	DB *gorm.DB
