@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/testapi/handlers"
 	"github.com/testapi/models"
@@ -17,7 +18,22 @@ import (
 var handler handlers.Handler
 
 func main() {
-	handler.Connect("localhost", "postgres", "root", "forapi", "5433")
+
+	// set environment variables
+	os.Setenv("DB_HOST", "localhost")
+	os.Setenv("DB_PORT", "5433")
+	os.Setenv("DB_USER", "postgres")
+	os.Setenv("DB_PASSWORD", "root")
+	os.Setenv("DB_NAME", "forapi")
+
+	os.Setenv("DB_HOST_TEST", "localhost")
+	os.Setenv("DB_PORT_TEST", "5433")
+	os.Setenv("DB_USER_TEST", "postgres")
+	os.Setenv("DB_PASSWORD_TEST", "root")
+	os.Setenv("DB_NAME_TEST", "testapi")
+
+
+	handler.Connect(os.Getenv("DB_HOST"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"), os.Getenv("DB_PORT"))
 
 	handler.DB.AutoMigrate(&models.Book{})
 	handler.DB.AutoMigrate(&models.User{})

@@ -11,32 +11,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var usrHandler Handler
 
-// func TestMain(m *testing.M) {
-// 	dsn := "host=localhost user=postgres password=root dbname=forapi port=5433 sslmode=disable"
-//     db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-//     if err != nil {
-//         panic("failed to connect database")
-//     }
-// 	usrHandler.DB = db
-//     usrHandler.Connect("localhost", "postgres", "root", "forapi", "5433")
+func TestAddUser(t *testing.T) {
+    router := gin.Default()
+    router.POST("/adduser", mainhadler.AddUser)
 
-//     code := m.Run()
+    req, _ := http.NewRequest("POST", "/adduser", strings.NewReader(`{"ID": 15, "user_name": "Alice", "email": "alice@example.com"}`))
+    req.Header.Set("Content-Type", "application/json")
+    recorder := httptest.NewRecorder()
 
-//     dbInstance, _ := usrHandler.DB.DB()
-//     dbInstance.Close()
+    router.ServeHTTP(recorder, req)
 
-//     os.Exit(code)
-// }
-
-// func TestConnect(t *testing.T) {
-// 	assert.NotNil(t, usrHandler.DB)
-// }
+    fmt.Println("AddUser Test Result:", recorder.Body.String())
+    assert.Equal(t, http.StatusCreated, recorder.Code)
+}
 
 func TestGetUser(t *testing.T) {
     router := gin.Default()
-    router.GET("/user", usrHandler.GetUser)
+    router.GET("/user", mainhadler.GetUser)
 
     req, _ := http.NewRequest("GET", "/user", nil)
     recorder := httptest.NewRecorder()
@@ -47,25 +39,11 @@ func TestGetUser(t *testing.T) {
     assert.Equal(t, http.StatusOK, recorder.Code)
 }
 
-func TestAddUser(t *testing.T) {
-    router := gin.Default()
-    router.POST("/adduser", usrHandler.AddUser)
-
-    req, _ := http.NewRequest("POST", "/adduser", strings.NewReader(`{"ID": 12, "user_name": "Alice", "email": "alice@example.com"}`))
-    req.Header.Set("Content-Type", "application/json")
-    recorder := httptest.NewRecorder()
-
-    router.ServeHTTP(recorder, req)
-
-    fmt.Println("AddUser Test Result:", recorder.Body.String())
-    assert.Equal(t, http.StatusCreated, recorder.Code)
-}
-
 func TestGetUserInd(t *testing.T) {
     router := gin.Default()
-    router.GET("/user/:id", usrHandler.GetUserInd)
+    router.GET("/user/:id", mainhadler.GetUserInd)
 
-    req, _ := http.NewRequest("GET", "/user/12", nil)
+    req, _ := http.NewRequest("GET", "/user/15", nil)
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)
@@ -76,9 +54,9 @@ func TestGetUserInd(t *testing.T) {
 
 func TestUpdateUser(t *testing.T) {
     router := gin.Default()
-    router.PUT("/updateUser/:id", usrHandler.UpdateUser)
+    router.PUT("/updateUser/:id", mainhadler.UpdateUser)
 
-    req, _ := http.NewRequest("PUT", "/updateUser/12", strings.NewReader(`{"user_name": "Alice", "email": "alice.smith@example.com"}`))
+    req, _ := http.NewRequest("PUT", "/updateUser/15", strings.NewReader(`{"user_name": "Alice-updated", "email": "alice.smith@example.com"}`))
     req.Header.Set("Content-Type", "application/json")
     recorder := httptest.NewRecorder()
 
@@ -91,9 +69,9 @@ func TestUpdateUser(t *testing.T) {
 
 func TestDelUser(t *testing.T) {
     router := gin.Default()
-    router.DELETE("/delUser/:id", usrHandler.DelUser)
+    router.DELETE("/delUser/:id", mainhadler.DelUser)
 
-    req, _ := http.NewRequest("DELETE", "/delUser/12", nil)
+    req, _ := http.NewRequest("DELETE", "/delUser/15", nil)
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)

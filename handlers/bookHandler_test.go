@@ -11,47 +11,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var bookHandler Handler
-
-// func TestMain(m *testing.M) {
-// 	dsn := "host=localhost user=postgres password=root dbname=forapi port=5433 sslmode=disable"
-//     db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-//     if err != nil {
-//         panic("failed to connect database")
-//     }
-// 	bookHandler.DB = db
-//     bookHandler.Connect("localhost", "postgres", "root", "forapi", "5433")
-
-//     code := m.Run()
-
-//     dbInstance, _ := bookHandler.DB.DB()
-//     dbInstance.Close()
-
-//     os.Exit(code)
-// }
-
-// func TestConnect(t *testing.T) {
-// 	assert.NotNil(t, bookHandler.DB)
-// }
-
-func TestGetBook(t *testing.T) {
-    router := gin.Default()
-    router.GET("/book", bookHandler.GetBook)
-
-    req, _ := http.NewRequest("GET", "/book", nil)
-    recorder := httptest.NewRecorder()
-
-    router.ServeHTTP(recorder, req)
-
-    fmt.Println("GetBook Test Result:", recorder.Body.String())
-    assert.Equal(t, http.StatusOK, recorder.Code)
-}
-
 func TestAddBook(t *testing.T) {
     router := gin.Default()
-    router.POST("/addbook", bookHandler.AddBook)
+    router.POST("/addbook", mainhadler.AddBook)
 
-    req, _ := http.NewRequest("POST", "/addbook", strings.NewReader(`{"ID": 10, "book_name": "Alice", "price": 100}`))
+    req, _ := http.NewRequest("POST", "/addbook", strings.NewReader(`{"ID": 1, "book_name": "newbook", "price": 100}`))
     req.Header.Set("Content-Type", "application/json")
     recorder := httptest.NewRecorder()
 
@@ -61,11 +25,23 @@ func TestAddBook(t *testing.T) {
     assert.Equal(t, http.StatusCreated, recorder.Code)
 }
 
+func TestGetBook(t *testing.T) {
+    router := gin.Default()
+    router.GET("/book", mainhadler.GetBook)
+
+    req, _ := http.NewRequest("GET", "/book", nil)
+    recorder := httptest.NewRecorder()
+    router.ServeHTTP(recorder, req)
+
+    fmt.Println("GetBook Test Result:", recorder.Body.String())
+    assert.Equal(t, http.StatusOK, recorder.Code)
+}
+
 func TestGetBookInd(t *testing.T) {
     router := gin.Default()
-    router.GET("/book/:id", bookHandler.GetBookInd)
+    router.GET("/book/:id", mainhadler.GetBookInd)
 
-    req, _ := http.NewRequest("GET", "/book/10", nil)
+    req, _ := http.NewRequest("GET", "/book/1", nil)
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)
@@ -76,9 +52,9 @@ func TestGetBookInd(t *testing.T) {
 
 func TestUpdateBook(t *testing.T) {
     router := gin.Default()
-    router.PUT("/updateBook/:id", bookHandler.UpdateBook)
+    router.PUT("/updateBook/:id", mainhadler.UpdateBook)
 
-    req, _ := http.NewRequest("PUT", "/updateBook/10", strings.NewReader(`{"book_name": "Alice", "price": 1000}`))
+    req, _ := http.NewRequest("PUT", "/updateBook/1", strings.NewReader(`{"book_name": "Alice-updated", "price": 1000}`))
     req.Header.Set("Content-Type", "application/json")
     recorder := httptest.NewRecorder()
 
@@ -91,9 +67,9 @@ func TestUpdateBook(t *testing.T) {
 
 func TestDelBook(t *testing.T) {
     router := gin.Default()
-    router.DELETE("/delBook/:id", bookHandler.DelBook)
+    router.DELETE("/delBook/:id", mainhadler.DelBook)
 
-    req, _ := http.NewRequest("DELETE", "/delBook/10", nil)
+    req, _ := http.NewRequest("DELETE", "/delBook/1", nil)
     recorder := httptest.NewRecorder()
 
     router.ServeHTTP(recorder, req)
